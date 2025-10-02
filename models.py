@@ -1,35 +1,58 @@
 #models used 
 
-from transformers import BlipProcessor, BlipForConditionalGeneration
+from transformers import pipeline
 from PIL import Image
 
 
 class BaseModel:      #Base Class
     def __init__(self, model_name):
         self.model_name= model_name
+        self.pipeline=None 
 
     def process_input(self,input_data):
         raise NotImplementedError("Subclasses didn't override")
     
-class VADERVideoModel(BaseModel):     #Model 1 VADER Video (Text-to-video)
+    #Text-to Speech Model
+class TexttoSpeechModel(BaseModel):     #
     def __init__(self):
-        super().__init__("zheyangqin/VADER_VideoCrafter_PickScore")
-        ###  
-
+        super().__init__("microsoft/VibeVoice-1.5B")
+        try:
+            #Load pipeline
+            self.pipeline=pipeline("text-to-speech",model=self.model_name)
+        except Exception as e:
+            print ("Could not load Text-to speech",e)
+            self.pipeline=None 
+ 
     def process_input(self, input_data: str):
-        return 
+
+        if self.pipeline:
+            try:
+                output=self.pipeline(input_data)
+                return "Audio generated succesfully" 
+            except Exception as e:
+                return f"Error generating speech:{e}"
+        else:
+            return("Text to image requires heavy dependencies")
+    
     
 
 
 class ImageCaptionModel(BaseModel):          #Model 2 Image to text
     def __init__(self):
         super().__init__("Salesforce/blip-image-captioning-large")
-        self.processor= BlipProcessor.from_pretrained(self.model_name)
-        self.model=BlipForConditionalGeneration.from_pretrained(self.model_name)
+        try:
+            self.pipeline= pipeline("image-to-text", model=self.model_name)
+        except Exception as e:
+            print("Could not load image captioning model")
+            self.pipeline=None
 
-    def process_input(self, input_data):
-        image=Image.open(input_data).convert("RGB")
-        inputs= self.processor(images=image, return_tensors="pt")
-        out= self.model.generate(**inputs)
-        caption= self.processor.decode(out[0],skip_special_tokens=True)
-        return caption
+    def process_input(self, input_data: str):
+        
+        if self.pipeline:
+            try:
+                result=self.pipeline(input_data)
+                return result[0]["generated_text"]
+            except Exception as e:
+                return f"Error"
+        else:
+            return ("Image captioning model could not be loaded")

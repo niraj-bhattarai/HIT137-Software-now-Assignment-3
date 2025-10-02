@@ -2,12 +2,7 @@
 
 def model_information():
     return {
-        " VADER text-to-video": (
-            "Model:zheyangqin/VADER_VideoCrafter_PickScore\n"
-            "Category:Text-to-video\n"
-        ),
-        "Blip Image": (
-            "Model:Salesforce/blip-image-captioning-large\n"
-            "Category: image to text"
-        )
+        "Text-to-Speech": "Converts written text to speech. Useful for accessibility and voice applications",
+        "Image-to-Text": "Generates text describing the image using language model" 
+        
     }
