@@ -11,7 +11,10 @@ from utils import model_information
 class AIApp(tk.Tk):
     def __init__(self, screenName = None, baseName = None, className = "Tk", useTk = True, sync = False, use = None):
         super().__init__(screenName, baseName, className, useTk, sync, use)
+        #title for the frame
         self.title("Tkinter GUI - Assignment Software Now")
+
+        #Setting the window sizd
         self.geometry("900x700")
 
         #Initializing two models
