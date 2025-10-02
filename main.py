@@ -1,5 +1,8 @@
 #Main Program
 
+
+#Detailed commenting required
+
 from pythgui import AIApp
 
 
