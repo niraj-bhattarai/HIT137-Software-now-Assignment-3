@@ -1,4 +1,8 @@
-#models used 
+
+"""BlipForCondtional Generation came from Hugging Faces transfromers: for vision models
+BlipPRocessor :converts raw inputs into tesnors that model can understand"
+PIL or Pillow: used for image opertaions
+"""
 
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from PIL import Image
