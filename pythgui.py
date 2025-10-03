@@ -3,7 +3,7 @@
 
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
-from models import VADERVideoModel, ImageCaptionModel
+from models import TexttoSpeechModel, ImageCaptionModel
 from decorators import log_time
 from utils import model_information
 
@@ -18,7 +18,7 @@ class AIApp(tk.Tk):
         self.geometry("900x700")
 
         #Initializing two models
-        self.model1=VADERVideoModel()
+        self.model1=TexttoSpeechModel()
         self.model2=ImageCaptionModel()
         self.input_file=None   #For the uploaded files
 
@@ -36,7 +36,7 @@ class AIApp(tk.Tk):
 
         #Model menu
         model_menu=tk.Menu(menu_bar,tearoff=0)
-        model_menu.add_command(label="Run Text-to-video",command=self.run_model1)
+        model_menu.add_command(label="Run Text-to-speech",command=self.run_model1)
         model_menu.add_command(label="Run Image to Text",command=self.run_model2)
         menu_bar.add_cascade(label="Models",menu=model_menu)
 
@@ -49,43 +49,44 @@ class AIApp(tk.Tk):
 
     def create_widget(self):          #Main Widgets
 
+        #self.text_input=tk.Entry(self,width=50)
+        #self.text_input.pack(pady=5)
         selection_frame=tk.LabelFrame(self,text="Model Selection")
         selection_frame.pack(fill="x",padx=10,pady=5)
 
         tk.Label(selection_frame,text="Select Model").pack(side="left",padx=5)
-        self.model_select=ttk.Combobox(selection_frame,values=["Text-to-video","Image-to-text"])
+        self.model_select=ttk.Combobox(selection_frame,values=["Text-to-speech","Image-to-text"])
         self.model_select.current(0)
         self.model_select.pack(side="left",padx=5)
 
-        tk.Button(selection_frame,text="Run Model",command=self.run_model1).pack(side="left",padx=5)
+        self.model_select.bind("<<ComboboxSelected>>", self.show_model_information) #Refresh information section
         
 
         #Showing input and output
 
-        io_frame=tk.Frame(self)
-        io_frame.pack(fill="both",expand=True,padx=11,pady=5)
+        input_frame=tk.LabelFrame(self, text="User Input")
+        input_frame.pack(fill="x", padx=11,pady=10)
 
         #User input
 
-        input_frame=tk.LabelFrame(io_frame,text="User Input")
-        input_frame.pack(side="left",fill="both",expand=True,padx=5,pady=5)
-        
+        tk.Label(input_frame,text="Enter text for Text-to-Speech::").pack(anchor="w")
+        self.text_input=tk.Entry(input_frame,width=60)
+        self.text_input.pack(pady=5)
 
-        self.input_type=tk.StringVar(value="Text")
-        tk.Radiobutton(input_frame,text="Text",variable=self.input_type,value="Text").pack(anchor="w")
-        tk.Radiobutton(input_frame,text="Image",variable=self.input_type,value="Image").pack(anchor="w")
+        tk.Label(input_frame,text="Upload Image for Captioning:").pack(anchor="w")
 
         tk.Button(input_frame,text="Browse",command=self.upload_files).pack(pady=5)
         
 
-        self.input_text=tk.Text(input_frame,height=5, width=50)
-        self.input_text.pack(pady=5)
+        #self.input_text=tk.Text(input_frame,height=5, width=50)
+        #self.input_text.pack(pady=5)
+        button_frame= tk.Frame(input_frame)
+        button_frame.pack(fill="x",pady=5)
+        tk.Button(button_frame,text="Run Model 1",command=self.run_model1).pack(side="left",padx=5)
+        tk.Button(button_frame,text="Run Model 2",command=self.run_model2).pack(side="left",padx=5)
+        tk.Button(button_frame,text="Clear",command=self.clear_output).pack(side="left",padx=5)
 
-        tk.Button(input_frame,text="Run Model 1",command=self.run_model1).pack(side="left",padx=5)
-        tk.Button(input_frame,text="Run Model 2",command=self.run_model2).pack(side="left",padx=5)
-        tk.Button(input_frame,text="Clear",command=self.clear_output).pack(side="left",padx=5)
-
-        output_frame=tk.LabelFrame(io_frame,text="Model Output Section")
+        output_frame=tk.LabelFrame(self,text="Model Output Section")
         output_frame.pack(side="right",fill="both",expand=True,padx=5,pady=5)
 
         self.output_text=tk.Text(output_frame,height=15,width=60)
@@ -100,7 +101,7 @@ class AIApp(tk.Tk):
 
 
 
-        self.model_information_text=tk.Text(information_frame, height=10, width=15, fg="blue")
+        self.model_information_text=tk.Text(information_frame, height=10, width=40, fg="blue")
         self.model_information_text.grid(row=1,column=0,padx=5,pady=5)
 
         self.oop_information_text=tk.Text(information_frame,height=10,width=50)
@@ -127,28 +128,50 @@ class AIApp(tk.Tk):
 
     @log_time
     def run_model1(self):
-    #Running Model 1 i.e TExt-to-Video
-        result= self.model1.process_input("A horse running")
-        self.output_text.insert(tk.END, f"\nModel 1 Text-to-Video (VADER) Output:\n{result}\n")
-
+    #Running Model 1 i.e TExt-to-speech
+        enter_text=self.text_input.get()
+        if not enter_text:
+            messagebox.showerror("Error","Please enter textto convert")
+            return
+        result=self.model1.process_input(enter_text)
+        self.output_text.insert(tk.END, f"\nModel 1 Output: {result}\n")
+ 
     @log_time
     def run_model2(self):
       #Running Model 2 Image to Text
-        if not self.input_file:
-            messagebox.showerror("Error","Please upload an image first.")
-            return
+        try:
+            result=self.model2.process_input(self.input_file)
+            self.output_text.insert(tk.END,f"\n Model 2 Output: {result}\n")
+        except AttributeError:
+            messagebox.showerror("Error","Please upload an image")
+
+    def show_model_information(self, event=None):
+     
+    # Displaying model descriptions for selected model
+        selected = self.model_select.get()
+        information = model_information()  # from utils.py
+
+    # Clear old info before inserting new
+        self.model_information_text.delete(1.0, tk.END)
+
+        if selected == "Text-to-speech":
+         self.model_information_text.insert(
+            tk.END,
+            f"🎤 {selected}\n"
+            f"Model Name: microsoft/VibeVoice-1.5B\n"
+            f"Category: Speech Generation\n"
+            f"Description: {information['Text-to-Speech']}\n"
+           )
+        elif selected == "Image-to-text":
+           self.model_information_text.insert(
+            tk.END,
+            f"🖼️ {selected}\n"
+            f"Model Name: Salesforce/blip-image-captioning-large\n"
+            f"Category: Vision (Image Captioning)\n"
+            f"Description: {information['Image-to-Text']}\n"
+          )
+  
         
-        result=self.model2.process_input(self.input_file)
-        self.output_text.insert(tk.END, f"\nModel 2 Image to Text Output:\n{result}\n")
-
-
-    def show_model_information(self):
-         #Displaying model descriptions 
-
-        information= model_information()
-        self.model_information_text.insert(tk.END, "Model Information:\n\n")
-        for k,v in information.items():
-            self.model_information_text.insert(tk.END, f"{k}: {v}\n\n")
 
     def show_oop_information(self):
         oop_expl=(
