@@ -6,6 +6,7 @@ PIL or Pillow: used for image opertaions
 """
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from PIL import Image
+from transformers import pipeline
 
 
 """OOP(object oriented programming) concepts demonstrated"""

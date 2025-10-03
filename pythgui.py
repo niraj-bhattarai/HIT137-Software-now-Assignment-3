@@ -23,7 +23,7 @@ class AIApp(tk.Frame):
 
         # Window title and size (set on master)
         self.master.title("Tkinter GUI - Assignment Software Now")
-        self.master.geometry("900x700")
+        self.master.geometry("1200x900")
 
         # Initialize models
         self.model1 = TexttoSpeechModel()  # Text-to-Speech model
