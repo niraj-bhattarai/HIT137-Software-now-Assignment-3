@@ -1,5 +1,9 @@
 #models used 
 
+"""BlipForCondtional Generation came from Hugging Faces transfromers: for vision models
+BlipPRocessor :converts raw inputs into tensor (is mulitdimensional array) that model can understand"
+PIL or Pillow: used for image opertaions like save ,open etc
+"""
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from PIL import Image
 

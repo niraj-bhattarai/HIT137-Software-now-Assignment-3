@@ -1,10 +1,4 @@
-#Main Program
-
-
-#Detailed commenting required
-
-
-
+#Main program file for the whole code
 #importing the pythgui from AIApp
 from pythgui import AIApp
 
