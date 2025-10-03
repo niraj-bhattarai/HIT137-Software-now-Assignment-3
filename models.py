@@ -1,11 +1,13 @@
 
 
+
+
 """BlipForCondtional Generation came from Hugging Faces transfromers: for vision models
 BlipPRocessor :converts raw inputs into tesnors that model can understand"
 PIL or Pillow: used for image opertaions
 """
 from transformers import BlipProcessor, BlipForConditionalGeneration
-import pyttsx3  # fallback option (offline TTS)
+import pyttsx3  # fallback option (offline TTS) #it helps to provide offline text-to-speech tool if online TTS fails.
 from PIL import Image
 from transformers import pipeline
 
@@ -13,10 +15,10 @@ from transformers import pipeline
 """OOP(object oriented programming) concepts demonstrated"""
 
 
-"""Demonstrates abstraction base model for the AI """
+"""To Demonstrates abstraction base model for the AI """
 class BaseModel:     
     def __init__(self, model_name):
-        self.model_name= model_name #Encapsulation: data is inside the object
+        self.model_name= model_name #Encapsulation: data is inside the object which stores name of the model
         self.pipeline=None #Encapsulation varibale (internal) is hidden from outside use
 
     def process_input(self,input_data):
@@ -25,23 +27,23 @@ class BaseModel:
     
 #Text-to Speech Model
 #Demnonstrates the inheritence inherited form base model class
-lass TexttoSpeechModel(BaseModel):    
+class TexttoSpeechModel(BaseModel):    
     def __init__(self):
         # Inheritance: Calls parent class constructor
-        super().__init__("facebook/mms-tts-eng")   #Use a stable TTS model instead of VibeVoice
+        super().__init__("facebook/mms-tts-eng")   #To set model name.
 
         try:
-            # Abstraction: hiding pipeline setup, exposing only class methods
+            # Abstraction: hiding pipeline setup internally, exposing only class methods
             self.pipeline = pipeline("text-to-speech", model=self.model_name)
         except Exception as e:
             print("Could not load Hugging Face Text-to-Speech model:", e)
-            self.pipeline = None   # Will fallback later
+            self.pipeline = None   # Will fallback offline TTS later
 
-    # Polymorphism: overriding base process_input
+    # Polymorphism: overriding base process_input: this method generates the speech from the text.
     def process_input(self, input_data: str):
         if self.pipeline:
             try:
-                # Encapsulation: audio generation handled internally
+                # Encapsulation: audio generation handled internally: this helps to generate audio using online model
                 output = self.pipeline(input_data)
                 # Save audio file output
                 with open("output.wav", "wb") as f:
