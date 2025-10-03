@@ -37,6 +37,7 @@ class AIApp(tk.Frame):
 
     
     def create_menu(self):
+        """Creates the top menu bar with File, Models, and Help."""
         menu_bar = tk.Menu(self.master)
         self.master.config(menu=menu_bar)
 
@@ -63,6 +64,7 @@ class AIApp(tk.Frame):
 
     # -------------------- Main Widgets --------------------
     def create_widget(self):
+        """Creates main GUI widgets:model selection, input,buttons,output,info"""
         # Model selection frame
         selection_frame = tk.LabelFrame(self, text="Model Selection")
         selection_frame.pack(fill="x", padx=10, pady=5)
