@@ -1,6 +1,6 @@
 
 
-#Helper Function
+#Helper Function: in order to help to use.
 def model_information():
     return {
         #Description for Text-to-Speech
