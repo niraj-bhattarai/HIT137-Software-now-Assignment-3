@@ -5,6 +5,7 @@ BlipPRocessor :converts raw inputs into tesnors that model can understand"
 PIL or Pillow: used for image opertaions
 """
 from transformers import BlipProcessor, BlipForConditionalGeneration
+import pyttsx3  # fallback option (offline TTS)
 from PIL import Image
 from transformers import pipeline
 
@@ -24,33 +25,40 @@ class BaseModel:
     
 #Text-to Speech Model
 #Demnonstrates the inheritence inherited form base model class
-class TexttoSpeechModel(BaseModel):     #
+lass TexttoSpeechModel(BaseModel):    
     def __init__(self):
-        #Inheritence :from parent constructor
-        super().__init__("microsoft/VibeVoice-1.5B")
-        #Using try except to about interruption
-        try:
-            #Load pipeline
-            #Encapsulation :pipeline belongs to this class
-            #Abstraction: Details are hidden,just method is shown
-            self.pipeline=pipeline("text-to-speech",model=self.model_name)
-        except Exception as e:
-            print ("Could not load Text-to speech",e)
-            self.pipeline=None 
+        # Inheritance: Calls parent class constructor
+        super().__init__("facebook/mms-tts-eng")   #Use a stable TTS model instead of VibeVoice
 
-     #Polymorphism:overrirding the base process models
+        try:
+            # Abstraction: hiding pipeline setup, exposing only class methods
+            self.pipeline = pipeline("text-to-speech", model=self.model_name)
+        except Exception as e:
+            print("Could not load Hugging Face Text-to-Speech model:", e)
+            self.pipeline = None   # Will fallback later
+
+    # Polymorphism: overriding base process_input
     def process_input(self, input_data: str):
-       
         if self.pipeline:
             try:
-                #Encapsulation:wrapped inside an object
-                output=self.pipeline(input_data)
-                return "Audio generated successfully" 
+                # Encapsulation: audio generation handled internally
+                output = self.pipeline(input_data)
+                # Save audio file output
+                with open("output.wav", "wb") as f:
+                    f.write(output["audio"])
+                return "Audio generated successfully → saved as output.wav"
             except Exception as e:
-                return f"Error generating speech:{e}"
-        else:                            #Return error message if pipeline is not loaded
-            return("Text to image requires heavy dependencies")
-    
+                return f" Error generating speech: {e}"
+        else:
+            # Fallback: use pyttsx3 for offline speech
+            try:
+                engine = pyttsx3.init()
+                engine.save_to_file(input_data, "output_fallback.wav")
+                engine.runAndWait()
+                return "Hugging Face TTS unavailable → Fallback voice saved as output_fallback.wav"
+            except Exception as e:
+                return f"No TTS available: {e}"
+
     
 
 
