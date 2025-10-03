@@ -70,21 +70,21 @@ class AIApp(tk.Frame):
         selection_frame.pack(fill="x", padx=10, pady=5)
 
         tk.Label(selection_frame, text="Select Model").pack(side="left", padx=5)
-        self.model_select = ttk.Combobox(selection_frame, values=["Text-to-speech", "Image-to-text"])
+        self.model_select = ttk.Combobox(selection_frame, values=["Text-to-speech", "Image-to-text"]) #combobox for model selection
         self.model_select.current(0)
         self.model_select.pack(side="left", padx=5)
-        self.model_select.bind("<<ComboboxSelected>>", self.show_model_information)
+        self.model_select.bind("<<ComboboxSelected>>", self.show_model_information)  #updating information when a model is selected
 
         # User input frame
         input_frame = tk.LabelFrame(self, text="User Input")
         input_frame.pack(fill="x", padx=11, pady=10)
 
-        # Text input
+        # Text input for Text-to-Speech
         tk.Label(input_frame, text="Enter text for Text-to-Speech::").pack(anchor="w")
         self.text_input = tk.Entry(input_frame, width=60)
         self.text_input.pack(pady=5)
 
-        # Image upload
+        # Image upload for Image-to-text
         tk.Label(input_frame, text="Upload Image for Captioning:").pack(anchor="w")
         tk.Button(input_frame, text="Browse", command=self.upload_files).pack(pady=5)
 
@@ -104,9 +104,10 @@ class AIApp(tk.Frame):
         # Model information frame
         information_frame = tk.LabelFrame(self, text="Model Information")
         information_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        #Columns Label
         tk.Label(information_frame, text="Selected Model Information:").grid(row=0, column=0, sticky="w")
         tk.Label(information_frame, text="Object Oriented Concepts:").grid(row=0, column=1, sticky="w")
-
+         #Information Text Boxes
         self.model_information_text = tk.Text(information_frame, height=10, width=40, fg="blue")
         self.model_information_text.grid(row=1, column=0, padx=5, pady=5)
 
@@ -133,11 +134,11 @@ class AIApp(tk.Frame):
     def run_model1(self):
         """Run Text-to-Speech model"""
         enter_text = self.text_input.get()
-        if not enter_text:
+        if not enter_text:         #If text is empty,shows error
             messagebox.showerror("Error", "Please enter text to convert")
             return
         result = self.model1.process_input(enter_text)
-        self.output_text.insert(tk.END, f"\nModel 1 Output: {result}\n")
+        self.output_text.insert(tk.END, f"\nModel 1 Output: {result}\n")   #show result
 
     @log_time
     def run_model2(self):
@@ -146,13 +147,13 @@ class AIApp(tk.Frame):
             result = self.model2.process_input(self.input_file)
             self.output_text.insert(tk.END, f"\nModel 2 Output: {result}\n")
         except AttributeError:
-            messagebox.showerror("Error", "Please upload an image")
+            messagebox.showerror("Error", "Please upload an image")  #IF image is not uploaded/upload fail
 
     # -------------------- Display Model Info --------------------
     def show_model_information(self, event=None):
         selected = self.model_select.get()
         information = model_information()  # from utils.py
-        self.model_information_text.delete(1.0, tk.END)
+        self.model_information_text.delete(1.0, tk.END) #clears old information
 
         if selected == "Text-to-speech":
             self.model_information_text.insert(
