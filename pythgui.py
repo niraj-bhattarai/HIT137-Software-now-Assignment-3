@@ -159,7 +159,7 @@ class AIApp(tk.Frame):
             self.model_information_text.insert(
                 tk.END,
                 f"{selected}\n"
-                f"Model Name: microsoft/VibeVoice-1.5B\n"
+                f"Model Name: facebook/mms-tts-eng\n"
                 f"Category: Speech Generation\n"
                 f"Description: {information['Text-to-Speech']}\n"
             )
