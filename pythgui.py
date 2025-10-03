@@ -1,4 +1,6 @@
-#gui 
+
+
+"""This file contains the main components for the GUI models """
 # defines tkinter gui
 
 import tkinter as tk
