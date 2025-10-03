@@ -31,7 +31,7 @@ class TexttoSpeechModel(BaseModel):     #
         #Using try except to about interruption
         try:
             #Load pipeline
-            #Encapsulation :pipeline belopngs to this class
+            #Encapsulation :pipeline belongs to this class
             #Abstraction: Details are hidden,just method is shown
             self.pipeline=pipeline("text-to-speech",model=self.model_name)
         except Exception as e:
@@ -45,10 +45,10 @@ class TexttoSpeechModel(BaseModel):     #
             try:
                 #Encapsulation:wrapped inside an object
                 output=self.pipeline(input_data)
-                return "Audio generated succesfully" 
+                return "Audio generated successfully" 
             except Exception as e:
                 return f"Error generating speech:{e}"
-        else:
+        else:                            #Return error message if pipeline is not loaded
             return("Text to image requires heavy dependencies")
     
     
@@ -56,22 +56,22 @@ class TexttoSpeechModel(BaseModel):     #
 
  #Model 2 Image to text
 class ImageCaptionModel(BaseModel):         
-    def __init__(self):
+    def __init__(self):            #Inheritance: calling parent constructor
         super().__init__("Salesforce/blip-image-captioning-large")
-        try:
+        try:            #Encapsulation and abstraction: pipeline handles the model internally
             self.pipeline= pipeline("image-to-text", model=self.model_name)
         except Exception as e:
-            print("Could not load image captioning model")
+            print("Could not load image captioning model")    #Printing error in case model could not be loaded
             self.pipeline=None
 
 
-#tires to generate the audio from text if loaded corrrecotly
+#Pilymorphism: overriding base case class to process image.
     def process_input(self, input_data: str):
         if self.pipeline:
-            try:
+            try:      #Use of pipeline to generate caption from input image
                 result=self.pipeline(input_data)
-                return result[0]["generated_text"]
+                return result[0]["generated_text"]    #Returns the generated text from pipeline
             except Exception as e:
-                return f"Error"
-        else:
+                return f"Error"         #Error handling in process.
+        else:                            #Returns message if pipeline is not loaded.
             return ("Image captioning model could not be loaded")
